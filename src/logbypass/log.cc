@@ -1,5 +1,8 @@
 #include "log.h"
 
+#include <chrono>
+#include <thread>
+
 #include "configure-inl.h"
 #include "cpu.h"
 #include "environment_data.h"
@@ -21,10 +24,12 @@ uv_thread_t uv_log_thread;
 }
 
 static void LogThreadMain(void* unused) {
+  using namespace std::chrono_literals;
+
   uint64_t last_loop_time = uv_hrtime();
   while (1) {
     // sleep 1s for releasing cpu
-    Sleep(1);
+    std::this_thread::sleep_for(1s);
 
     // set now cpu usage
     SetNowCpuUsage();
@@ -38,7 +43,7 @@ static void LogThreadMain(void* unused) {
 
       env_data->SendCollectStatistics();
       // sleep 1s for executing async callback
-      Sleep(1);
+      std::this_thread::sleep_for(1s);
 
       // write cpu info
       WriteCpuUsageInPeriod(log_format_alinode);

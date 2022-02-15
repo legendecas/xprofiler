@@ -1,5 +1,8 @@
 #include "dump.h"
 
+#include <chrono>
+#include <thread>
+
 #include "configure-inl.h"
 #include "cpuprofiler/cpu_profiler.h"
 #include "environment_data.h"
@@ -246,10 +249,11 @@ void HandleAction(v8::Isolate* isolate, void* data, string notify_type) {
 #undef CHECK_ERR
 
 static void ProfilingTime(uint64_t profiling_time) {
+  using namespace std::chrono_literals;
   uint64_t start = uv_hrtime();
   while (uv_hrtime() - start < profiling_time * 10e5) {
     // release cpu
-    Sleep(1);
+    std::this_thread::sleep_for(1s);
   }
 }
 
@@ -296,7 +300,8 @@ static void ProfilingWatchDog(void* data) {
 
 static string CreateFilepath(string prefix, string ext) {
   return GetLogDir() + GetSep() + "x-" + prefix + "-" + to_string(GetPid()) +
-         "-" + ConvertTime("%Y%m%d") + "-" + RandNum() + "." + ext;
+         "-" + ConvertTime("%Y%m%d") + "-" + to_string(GetNextDiagFileId()) +
+         "." + ext;
 }
 
 #define CHECK_ERR(func) \

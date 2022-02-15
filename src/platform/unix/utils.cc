@@ -2,12 +2,10 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include "../platform.h"
+#include "platform/platform.h"
 #include "uv.h"
 
 namespace xprofiler {
-void SleepCrossPlatform(int seconds) { sleep(seconds); }
-
 std::string GetSep() { return "/"; }
 
 int GetPid() { return getpid(); }

@@ -15,7 +15,6 @@ void CreateIpcServer(void (*parsecmd)(char*));
 void CreateIpcClient(char* message);
 
 // utils
-void SleepCrossPlatform(int seconds);
 std::string GetSep();
 int GetPid();
 // for node-v8.x & ndoe-v10.x

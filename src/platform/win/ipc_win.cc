@@ -1,8 +1,11 @@
 #ifdef _WIN32
 #include <windows.h>
 
-#include "../../logger.h"
+#include <chrono>
+#include <thread>
+
 #include "configure-inl.h"
+#include "logger.h"
 #include "uv.h"
 
 namespace xprofiler {
@@ -45,6 +48,7 @@ void CheckSocketPath(const FunctionCallbackInfo<Value>& info) {
 }
 
 void CreateIpcServer(void (*parsecmd)(char*)) {
+  using namespace std::chrono_literals;
   HANDLE named_pipe = NULL;
   string lp_name_string = "\\\\.\\pipe\\" + GetLogDir() +
                           "\\xprofiler-named-pipe-" + std::to_string(getpid());
@@ -58,7 +62,7 @@ void CreateIpcServer(void (*parsecmd)(char*)) {
   while (1) {
     // sleep 1s when error occured
     if (error_closed) {
-      Sleep(1000);
+      std::this_thread::sleep(1000ms);
       error_closed = false;
     }
 
@@ -103,7 +107,7 @@ void CreateIpcServer(void (*parsecmd)(char*)) {
         need_read = true;
         break;
       }
-      Sleep(100);
+      std::this_thread::sleep(100ms);
     }
     if (!need_read) {
       CloseHandle(named_pipe);
